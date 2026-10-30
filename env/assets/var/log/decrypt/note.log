@@ -1,0 +1,7 @@
+[2026-10-28T06:12:44Z] Initialisation du module decrypt-note — v2.4
+[2026-10-28T06:12:45Z] Surveillance du canal furtif : OK
+[2026-10-29T09:03:11Z] Reception d'un document depuis SOURCE NERVI
+[2026-10-29T09:03:12Z] [CRYPT-ERR] Document chiffre detecte : decodage requis
+[2026-10-29T09:04:57Z] Tentative de decodage automatique...
+[2026-10-29T09:04:58Z] [PERM-DENIED] Execution refusee : l'outil doit etre lance par l'utilisateur 'agent' (moindre privilege).
+[2026-10-29T09:07:20Z] [PERM-DENIED] Execution refusee : l'outil doit etre lance par l'utilisateur 'agent' (moindre privilege).

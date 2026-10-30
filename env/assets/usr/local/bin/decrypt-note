@@ -1,0 +1,37 @@
+#!/bin/bash
+# ============================================================
+# decrypt-note — outil interne DGSE
+# Décrypte la note reçue de la source "NERVI".
+# Ne renvoie AUCUN message sur la console : tout est
+# journalisé dans $LOG_FILE (comportement discret).
+# ============================================================
+
+NOTE="/srv/datas/note_1773.dat"
+DEC="/srv/datas/note_1773.dec"
+LOG_FILE="/var/log/decrypt/note.log"
+
+log() {
+    echo "[$(date -u '+%Y-%m-%dT%H:%M:%SZ')] $1" >> "$LOG_FILE" 2>/dev/null
+}
+
+# --- Politique de moindre privilège : jamais en root ---
+if [ "$(id -un)" = "root" ]; then
+    log "[PERM-DENIED] Execution refusee : l'outil doit etre lance par l'utilisateur 'agent' (moindre privilege)."
+    exit 0
+fi
+
+# --- Le document doit etre lisible ---
+if [ ! -r "$NOTE" ]; then
+    log "[PERM-DENIED] Lecture impossible sur $NOTE : verifier le proprietaire (chown) et les droits (chmod)."
+    exit 0
+fi
+
+# --- Décryptage (partie visible du mécanisme) ---
+sed '/^\[CRYPT-ERR\]/d' "$NOTE" | base64 -d > "$DEC" 2>/dev/null
+if [ $? -ne 0 ] || [ ! -s "$DEC" ]; then
+    log "[CRYPT-ERR] Echec du decodage du document."
+    exit 0
+fi
+
+log "[DEC-OK] Document decrypte : $DEC"
+exit 0

@@ -7,7 +7,7 @@ import type { Mission } from '../types/mission';
  * sur la note cryptée.
  *
  * Chaque étape est validée par un code que l'apprenti obtient
- * en manipulant le conteneur Linux (à venir : image "environnement").
+ * en manipulant le conteneur Linux (image "env/").
  */
 export const MISSIONS: Mission[] = [
   {
@@ -32,7 +32,7 @@ export const MISSIONS: Mission[] = [
           "Le message d'accueil du système affiche un code d'activation.",
           'Saisissez-le ci-dessous pour commencer la mission.',
         ],
-        hint: 'Indice : le message de bienvenue de root commence par "ROOT-"…',
+        hint: 'Indice : le message de bienvenue de root contient "Code d’activation…".',
         expectedCode: 'ROOT-DSI',
       },
       {
@@ -53,7 +53,7 @@ export const MISSIONS: Mission[] = [
         prompt: [
           'Affichez le contenu du document avec CAT.',
           'Constatez par vous-même : il est illisible, entièrement chiffré.',
-          'Le terminal affiche alors un marqueur d’erreur cryptographique.',
+          'Le document porte un marqueur d’erreur cryptographique.',
           'Reportez ce marqueur ci-dessous.',
         ],
         hint: 'Indice : cat <chemin du fichier> — cherchez une ligne [CRYPT-…]',
@@ -87,37 +87,36 @@ export const MISSIONS: Mission[] = [
         title: 'Consulter les logs',
         prompt: [
           'Affichez les logs du décryptage avec CAT.',
-          'Surprise : "Permission denied". Le décryptage échoue silencieusement '
-            + 'à cause d’un problème de PERMISSIONS.',
-          'Notez le marqueur affiché par le système pour refus d’accès.',
+          'Le décryptage échoue silencieusement, mais les logs, eux, '
+            + 'expliquent le problème : un refus d’accès.',
+          'Notez le marqueur de refus d’accès qui apparaît dans les logs.',
         ],
-        hint: 'Indice : cat /var/log/decrypt/note.log — lisez le message d’erreur',
+        hint: 'Indice : cat /var/log/decrypt/note.log — cherchez les lignes [PERM-…]',
         expectedCode: 'PERM-DENIED',
       },
       {
         id: '07',
         title: 'Rendre le fichier au bon propriétaire',
         prompt: [
-          'Le document appartient à root, alors que l’agent décrypteur AGENT '
+          'Le document appartient à root, alors que le décrypteur AGENT '
             + 'doit pouvoir y accéder.',
           'Utilisez CHOWN pour donner la propriété du document à l’utilisateur agent.',
-          'Validez avec le marqueur de confirmation affiché dans les logs.',
+          'Vérifiez avec STAT qui est désormais le propriétaire, et reportez son nom.',
         ],
-        hint: 'Indice : chown agent:agent <chemin du document>',
-        expectedCode: 'CHOWN-OK',
+        hint: 'Indice : chown agent:agent <chemin du document> puis stat -c "%U" <chemin du document>',
+        expectedCode: 'agent',
       },
       {
         id: '08',
         title: 'Ajuster les droits',
         prompt: [
-          'Le propriétaire peut maintenant lire, mais il manque le droit '
-            + 'd’écriture pour la journalisation.',
+          'Il manque maintenant le droit d’écriture pour le rapport de décryptage.',
           'Utilisez CHMOD pour positionner les droits : lecture + écriture '
-            + 'pour le propriétaire, lecture pour le groupe.',
-          'Validez avec le marqueur de confirmation des logs.',
+            + 'pour le propriétaire, lecture pour le groupe, rien pour les autres.',
+          'Vérifiez avec STAT la valeur numérique des droits, et reportez-la.',
         ],
-        hint: 'Indice : chmod 640 <chemin du document>',
-        expectedCode: 'CHMOD-OK',
+        hint: 'Indice : chmod 640 <chemin du document> puis stat -c "%a" <chemin du document>',
+        expectedCode: '640',
       },
       {
         id: '09',
@@ -125,9 +124,10 @@ export const MISSIONS: Mission[] = [
         prompt: [
           'Le décryptage doit être lancé par l’utilisateur AGENT, pas par root.',
           'Utilisez SU pour prendre l’identité de l’agent, puis relancez DECRYPT-NOTE.',
-          'Validez avec le marqueur de succès affiché.',
+          'Toujours silencieux… Retournez en root et relisez les logs : '
+            + 'reportez le marqueur de succès.',
         ],
-        hint: 'Indice : su agent -c decrypt-note',
+        hint: 'Indice : su agent -c decrypt-note ; puis exit, et cat /var/log/decrypt/note.log',
         expectedCode: 'DEC-OK',
       },
       {
@@ -138,7 +138,7 @@ export const MISSIONS: Mission[] = [
           'La source vous y livre un message… et surtout UN CODE D’ACCÈS.',
           'Saisissez ce code ci-dessous : la mission sera validée.',
         ],
-        hint: 'Indice : le code de la note est au format DGSE-XXXX',
+        hint: 'Indice : cat /srv/datas/note_1773.dec — le code est au format DGSE-XXXX',
         expectedCode: 'DGSE-2468',
       },
     ],

@@ -1,0 +1,21 @@
+services:
+  # --- Interface web de l'escape game (terminal de commandement) ---
+  interface:
+    build: ./interface
+    image: lab-numeric-interface
+    container_name: lab-numeric-interface
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+
+  # --- Environnement Linux de l'apprenti (mission 01) ---
+  # À lancer en interactif pour travailler dedans :
+  #   docker compose run --rm lab
+  lab:
+    build:
+      context: ./env
+    image: lab-numeric-env
+    container_name: lab-numeric-env
+    stdin_open: true
+    tty: true
+    command: ["--login"]
