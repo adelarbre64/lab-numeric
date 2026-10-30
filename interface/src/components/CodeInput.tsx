@@ -2,7 +2,8 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 
 interface CodeInputProps {
-  onCode: (code: string) => void;
+  /** Valide un code saisi : retourne true si le code est accepté. */
+  onCode: (code: string) => boolean;
   disabled?: boolean;
 }
 
@@ -17,8 +18,8 @@ export function CodeInput({ onCode, disabled = false }: CodeInputProps) {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!value.trim()) return;
-    const ok = onCode(value.trim());
-    if (ok) {
+    const accepted = onCode(value.trim());
+    if (accepted) {
       setValue('');
       setError(null);
     } else {
@@ -29,7 +30,7 @@ export function CodeInput({ onCode, disabled = false }: CodeInputProps) {
   return (
     <form className="code-input" onSubmit={handleSubmit}>
       <label className="code-input__label" htmlFor="mission-code">
-        &gt; Code d’accès :
+        &gt; Code d'accès :
       </label>
       <input
         id="mission-code"
